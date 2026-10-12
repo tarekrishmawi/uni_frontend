@@ -1,65 +1,93 @@
+import {
+  NavLink,
+  Outlet,
+  useNavigate,
+} from 'react-router-dom';
 
-import { useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
-import { Bell, Menu, Search } from 'lucide-react';
-import Sidebar from './Sidebar';
+import {
+  GraduationCap,
+  LayoutDashboard,
+  LogOut,
+  Users,
+} from 'lucide-react';
 
-const pageTitles: Record<string, string> = {
-  '/': 'Dashboard',
-  '/students': 'Student Management',
-};
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { logoutUser } from '../features/auth/authSlice';
 
 export default function AppLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const location = useLocation();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  const title = pageTitles[location.pathname] ?? 'University Portal';
+  const { username, role } = useAppSelector(
+    (state) => state.auth,
+  );
+
+  async function handleLogout() {
+    await dispatch(logoutUser());
+    navigate('/login', { replace: true });
+  }
+
+  const linkClass = ({ isActive }: { isActive: boolean }) =>
+    `nav-link d-flex align-items-center gap-2 rounded px-3 py-2 ${
+      isActive
+        ? 'active bg-primary text-white'
+        : 'text-secondary'
+    }`;
 
   return (
-    <div className="app-shell">
-      {sidebarOpen && (
-        <button
-          className="sidebar-backdrop"
-          aria-label="Close navigation"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+    <div className="min-vh-100 bg-light">
+      <header className="navbar bg-white border-bottom px-3 px-lg-4 py-3">
+        <NavLink
+          to="/"
+          className="navbar-brand d-flex align-items-center gap-2 fw-bold mb-0"
+        >
+          <GraduationCap size={28} className="text-primary" />
+          <span>University IS</span>
+        </NavLink>
 
-      <div className={sidebarOpen ? 'sidebar-wrapper sidebar-open' : 'sidebar-wrapper'}>
-        <Sidebar />
-      </div>
+        <div className="d-flex align-items-center gap-3">
+          <div className="text-end d-none d-sm-block">
+            <div className="fw-semibold">{username}</div>
+            <small className="text-secondary">{role}</small>
+          </div>
 
-      <main className="main-content">
-        <header className="topbar">
           <button
-            className="icon-button mobile-menu"
-            aria-label="Toggle navigation"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            type="button"
+            className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2"
+            onClick={handleLogout}
+            aria-label="Sign out"
           >
-            <Menu size={21} />
+            <LogOut size={16} />
+            <span>Sign out</span>
           </button>
+        </div>
+      </header>
 
-          <div>
-            <div className="breadcrumb">University / {title}</div>
-            <h1 className="page-title">{title}</h1>
-          </div>
+      <div className="container-fluid">
+        <div className="row">
+          <aside className="col-md-3 col-lg-2 bg-white border-end min-vh-100 p-3">
+            <p className="text-secondary text-uppercase small fw-semibold px-3 mt-2">
+              Main menu
+            </p>
 
-          <div className="topbar-actions">
-            <button className="icon-button" aria-label="Search">
-              <Search size={19} />
-            </button>
-            <button className="icon-button notification-button" aria-label="Notifications">
-              <Bell size={19} />
-              <span />
-            </button>
-            <div className="topbar-avatar">AD</div>
-          </div>
-        </header>
+            <nav className="nav flex-column gap-2">
+              <NavLink to="/" end className={linkClass}>
+                <LayoutDashboard size={19} />
+                Dashboard
+              </NavLink>
 
-        <section className="page-content">
-          <Outlet />
-        </section>
-      </main>
+              <NavLink to="/students" className={linkClass}>
+                <Users size={19} />
+                Students
+              </NavLink>
+            </nav>
+          </aside>
+
+          <main className="col-md-9 col-lg-10 p-3 p-lg-4">
+            <Outlet />
+          </main>
+        </div>
+      </div>
     </div>
   );
 }

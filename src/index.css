@@ -685,3 +685,13 @@ button {
     flex-direction: column;
   }
 }
+
+.animate-spin {
+  animation: auth-spin 1s linear infinite;
+}
+
+@keyframes auth-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

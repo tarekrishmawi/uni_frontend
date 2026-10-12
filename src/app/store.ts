@@ -1,9 +1,21 @@
 import { configureStore } from '@reduxjs/toolkit';
 
+import authReducer, {
+  sessionExpired,
+} from '../features/auth/authSlice';
+
+import { clearAccessToken } from '../auth/tokenStore';
+import { setSessionExpiredHandler } from '../auth/sessionEvents';
+
 export const store = configureStore({
   reducer: {
-    // We'll register authentication and student reducers next.
+    auth: authReducer,
   },
+});
+
+setSessionExpiredHandler(() => {
+  clearAccessToken();
+  store.dispatch(sessionExpired());
 });
 
 export type RootState = ReturnType<typeof store.getState>;
