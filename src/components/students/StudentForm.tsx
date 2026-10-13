@@ -1,6 +1,5 @@
-
-import { useRef, useState } from 'react';
-import type { FormEvent, ChangeEvent } from 'react';
+import { useRef, useState } from "react";
+import type { FormEvent, ChangeEvent } from "react";
 import {
   AlertCircle,
   ArrowLeft,
@@ -8,13 +7,13 @@ import {
   LoaderCircle,
   Save,
   UserRoundPlus,
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
 import type {
   Student,
   StudentRequest,
-} from '../../features/students/studentsTypes';
+} from "../../features/students/studentsTypes";
 
 interface StudentFormProps {
   initialStudent?: Student | null;
@@ -30,67 +29,70 @@ interface FormValues {
   email: string;
   dateOfBirth: string;
   phone: string;
+  status: "ACTIVE" | "INACTIVE";
 }
 
 type FieldName = keyof FormValues;
 type FieldErrors = Partial<Record<FieldName, string>>;
 
 const fieldNames: FieldName[] = [
-  'studentNumber',
-  'firstName',
-  'lastName',
-  'email',
-  'dateOfBirth',
-  'phone',
+  "studentNumber",
+  "firstName",
+  "lastName",
+  "email",
+  "dateOfBirth",
+  "phone",
 ];
 
 const fieldLabels: Record<FieldName, string> = {
-  studentNumber: 'Student number',
-  firstName: 'First name',
-  lastName: 'Last name',
-  email: 'Email address',
-  dateOfBirth: 'Date of birth',
-  phone: 'Phone number',
+  studentNumber: "Student number",
+  firstName: "First name",
+  lastName: "Last name",
+  email: "Email address",
+  dateOfBirth: "Date of birth",
+  phone: "Phone number",
+  status: "Status",
 };
 
 function getInitialForm(student?: Student | null): FormValues {
   return {
-    studentNumber: student?.studentNumber ?? '',
-    firstName: student?.firstName ?? '',
-    lastName: student?.lastName ?? '',
-    email: student?.email ?? '',
-    dateOfBirth: student?.dateOfBirth ?? '',
-    phone: student?.phone ?? '',
+    studentNumber: student?.studentNumber ?? "",
+    firstName: student?.firstName ?? "",
+    lastName: student?.lastName ?? "",
+    email: student?.email ?? "",
+    dateOfBirth: student?.dateOfBirth ?? "",
+    phone: student?.phone ?? "",
+    status: student?.status === "INACTIVE" ? "INACTIVE" : "ACTIVE",
   };
 }
 
 export default function StudentForm({
   initialStudent = null,
   onSubmit,
-  submitLabel = 'Save Student',
+  submitLabel = "Save Student",
   isSubmitting = false,
 }: StudentFormProps) {
-  const [form, setForm] = useState<FormValues>(
-    () => getInitialForm(initialStudent),
+  const [form, setForm] = useState<FormValues>(() =>
+    getInitialForm(initialStudent),
   );
   const formRef = useRef<HTMLFormElement>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   function validateField(name: FieldName): string {
     const input = formRef.current?.elements.namedItem(name);
 
-    if (!(input instanceof HTMLInputElement)) return '';
+    if (!(input instanceof HTMLInputElement)) return "";
     if (input.required && !form[name].trim()) {
       return `${fieldLabels[name]} is required.`;
     }
     if (input.validity.valueMissing) return `${fieldLabels[name]} is required.`;
-    if (input.validity.typeMismatch) return 'Enter a valid email address.';
+    if (input.validity.typeMismatch) return "Enter a valid email address.";
     if (input.validity.tooLong) {
       return `${fieldLabels[name]} must be ${input.maxLength} characters or fewer.`;
     }
 
-    return '';
+    return "";
   }
 
   function validateForm(): FieldErrors {
@@ -109,12 +111,12 @@ export default function StudentForm({
       [name]: value,
     }));
     setFieldErrors((previous) => ({ ...previous, [name]: undefined }));
-    setError('');
+    setError("");
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError('');
+    setError("");
 
     const validationErrors = validateForm();
     setFieldErrors(validationErrors);
@@ -135,14 +137,15 @@ export default function StudentForm({
         email: form.email.trim(),
         dateOfBirth: form.dateOfBirth || null,
         phone: form.phone.trim() || null,
+        status: form.status,
       });
     } catch (err: unknown) {
       setError(
-        typeof err === 'string'
+        typeof err === "string"
           ? err
           : err instanceof Error
             ? err.message
-            : 'Unable to save the student. Please try again.',
+            : "Unable to save the student. Please try again.",
       );
     }
   }
@@ -156,23 +159,33 @@ export default function StudentForm({
     >
       <div className="form-heading">
         <div className="form-heading-icon" aria-hidden="true">
-          {initialStudent ? <CheckCircle2 size={22} /> : <UserRoundPlus size={22} />}
+          {initialStudent ? (
+            <CheckCircle2 size={22} />
+          ) : (
+            <UserRoundPlus size={22} />
+          )}
         </div>
         <div className="form-heading-copy">
           <span className="form-eyebrow">
-            {initialStudent ? 'STUDENT PROFILE' : 'NEW ENROLLMENT'}
+            {initialStudent ? "STUDENT PROFILE" : "NEW ENROLLMENT"}
           </span>
-          <h2>{initialStudent ? 'Student information' : 'Create student record'}</h2>
+          <h2>
+            {initialStudent ? "Student information" : "Create student record"}
+          </h2>
           <p>
             {initialStudent
-              ? 'Make changes to the student details below.'
-              : 'Add the student details to create their university record.'}
+              ? "Make changes to the student details below."
+              : "Add the student details to create their university record."}
           </p>
         </div>
       </div>
 
       {error && (
-        <div className="student-alert student-alert-error" role="alert" aria-live="assertive">
+        <div
+          className="student-alert student-alert-error"
+          role="alert"
+          aria-live="assertive"
+        >
           <AlertCircle size={19} aria-hidden="true" />
           <div>
             <strong>We couldn’t save this student</strong>
@@ -188,20 +201,28 @@ export default function StudentForm({
             id="studentNumber"
             name="studentNumber"
             aria-invalid={Boolean(fieldErrors.studentNumber)}
-            aria-describedby={fieldErrors.studentNumber ? 'studentNumber-error' : undefined}
+            aria-describedby={
+              fieldErrors.studentNumber ? "studentNumber-error" : undefined
+            }
             value={form.studentNumber}
             onChange={handleChange}
-            onBlur={() => setFieldErrors((previous) => ({
-              ...previous,
-              studentNumber: validateField('studentNumber') || undefined,
-            }))}
+            onBlur={() =>
+              setFieldErrors((previous) => ({
+                ...previous,
+                studentNumber: validateField("studentNumber") || undefined,
+              }))
+            }
             maxLength={20}
             required
             autoComplete="off"
             placeholder="e.g. STU-2026-001"
           />
           {fieldErrors.studentNumber && (
-            <span className="field-error" id="studentNumber-error" role="status">
+            <span
+              className="field-error"
+              id="studentNumber-error"
+              role="status"
+            >
               {fieldErrors.studentNumber}
             </span>
           )}
@@ -213,13 +234,17 @@ export default function StudentForm({
             id="firstName"
             name="firstName"
             aria-invalid={Boolean(fieldErrors.firstName)}
-            aria-describedby={fieldErrors.firstName ? 'firstName-error' : undefined}
+            aria-describedby={
+              fieldErrors.firstName ? "firstName-error" : undefined
+            }
             value={form.firstName}
             onChange={handleChange}
-            onBlur={() => setFieldErrors((previous) => ({
-              ...previous,
-              firstName: validateField('firstName') || undefined,
-            }))}
+            onBlur={() =>
+              setFieldErrors((previous) => ({
+                ...previous,
+                firstName: validateField("firstName") || undefined,
+              }))
+            }
             maxLength={100}
             required
             autoComplete="given-name"
@@ -238,13 +263,17 @@ export default function StudentForm({
             id="lastName"
             name="lastName"
             aria-invalid={Boolean(fieldErrors.lastName)}
-            aria-describedby={fieldErrors.lastName ? 'lastName-error' : undefined}
+            aria-describedby={
+              fieldErrors.lastName ? "lastName-error" : undefined
+            }
             value={form.lastName}
             onChange={handleChange}
-            onBlur={() => setFieldErrors((previous) => ({
-              ...previous,
-              lastName: validateField('lastName') || undefined,
-            }))}
+            onBlur={() =>
+              setFieldErrors((previous) => ({
+                ...previous,
+                lastName: validateField("lastName") || undefined,
+              }))
+            }
             maxLength={100}
             required
             autoComplete="family-name"
@@ -264,13 +293,15 @@ export default function StudentForm({
             name="email"
             type="email"
             aria-invalid={Boolean(fieldErrors.email)}
-            aria-describedby={fieldErrors.email ? 'email-error' : undefined}
+            aria-describedby={fieldErrors.email ? "email-error" : undefined}
             value={form.email}
             onChange={handleChange}
-            onBlur={() => setFieldErrors((previous) => ({
-              ...previous,
-              email: validateField('email') || undefined,
-            }))}
+            onBlur={() =>
+              setFieldErrors((previous) => ({
+                ...previous,
+                email: validateField("email") || undefined,
+              }))
+            }
             maxLength={150}
             required
             autoComplete="email"
@@ -290,13 +321,17 @@ export default function StudentForm({
             name="dateOfBirth"
             type="date"
             aria-invalid={Boolean(fieldErrors.dateOfBirth)}
-            aria-describedby={fieldErrors.dateOfBirth ? 'dateOfBirth-error' : undefined}
+            aria-describedby={
+              fieldErrors.dateOfBirth ? "dateOfBirth-error" : undefined
+            }
             value={form.dateOfBirth}
             onChange={handleChange}
-            onBlur={() => setFieldErrors((previous) => ({
-              ...previous,
-              dateOfBirth: validateField('dateOfBirth') || undefined,
-            }))}
+            onBlur={() =>
+              setFieldErrors((previous) => ({
+                ...previous,
+                dateOfBirth: validateField("dateOfBirth") || undefined,
+              }))
+            }
           />
           {fieldErrors.dateOfBirth && (
             <span className="field-error" id="dateOfBirth-error" role="status">
@@ -312,13 +347,15 @@ export default function StudentForm({
             name="phone"
             type="tel"
             aria-invalid={Boolean(fieldErrors.phone)}
-            aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
+            aria-describedby={fieldErrors.phone ? "phone-error" : undefined}
             value={form.phone}
             onChange={handleChange}
-            onBlur={() => setFieldErrors((previous) => ({
-              ...previous,
-              phone: validateField('phone') || undefined,
-            }))}
+            onBlur={() =>
+              setFieldErrors((previous) => ({
+                ...previous,
+                phone: validateField("phone") || undefined,
+              }))
+            }
             maxLength={30}
             autoComplete="tel"
             placeholder="Enter phone number"
@@ -328,6 +365,26 @@ export default function StudentForm({
               {fieldErrors.phone}
             </span>
           )}
+        </div>
+
+        <div className="form-field">
+          <label htmlFor="status">Student Status *</label>
+          <select
+            id="status"
+            name="status"
+            value={form.status}
+            onChange={(event) => {
+              setForm((previous) => ({
+                ...previous,
+                status: event.target.value as "ACTIVE" | "INACTIVE",
+              }));
+              setError("");
+            }}
+            required
+          >
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+          </select>
         </div>
       </div>
 
@@ -351,7 +408,7 @@ export default function StudentForm({
           ) : (
             <Save size={16} />
           )}
-          {isSubmitting ? 'Saving...' : submitLabel}
+          {isSubmitting ? "Saving..." : submitLabel}
         </button>
       </div>
     </form>

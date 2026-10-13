@@ -19,6 +19,7 @@ export interface StudentRequest {
   email: string;
   dateOfBirth: string | null;
   phone: string | null;
+  status: 'ACTIVE' | 'INACTIVE';
 }
 
 export interface PageResponse<T> {
