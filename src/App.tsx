@@ -1,3 +1,4 @@
+
 import {
   Navigate,
   Route,
@@ -10,6 +11,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import DashboardPage from './pages/DashboardPage';
 import LoginPage from './pages/LoginPage';
 import StudentsPage from './pages/StudentsPage';
+import StudentCreatePage from './pages/StudentCreatePage';
+import StudentEditPage from './pages/StudentEditPage';
 
 export default function App() {
   return (
@@ -20,6 +23,16 @@ export default function App() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/students" element={<StudentsPage />} />
+
+          <Route
+            path="/students/new"
+            element={<StudentCreatePage />}
+          />
+
+          <Route
+            path="/students/:id/edit"
+            element={<StudentEditPage />}
+          />
         </Route>
       </Route>
 

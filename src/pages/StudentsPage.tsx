@@ -4,12 +4,14 @@ import {
   ChevronLeft,
   ChevronRight,
   LoaderCircle,
+  Pencil,
   Plus,
   RefreshCw,
   Search,
   Trash2,
   Users,
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import {
@@ -90,14 +92,13 @@ export default function StudentsPage() {
           </p>
         </div>
 
-        <button
-          type="button"
+        <Link
+          to="/students/new"
           className="btn btn-primary d-flex align-items-center gap-2"
-          onClick={() => window.alert('The student form is the next step.')}
         >
           <Plus size={18} />
           Add student
-        </button>
+        </Link>
       </div>
 
       <div className="row g-3 mb-4">
@@ -246,6 +247,14 @@ export default function StudentsPage() {
                         </span>
                       </td>
                       <td className="text-end">
+                        <Link
+                          to={`/students/${student.id}/edit`}
+                          className="btn btn-sm btn-outline-primary me-2"
+                          title={`Edit ${student.firstName} ${student.lastName}`}
+                          aria-label={`Edit ${student.firstName} ${student.lastName}`}
+                        >
+                          <Pencil size={16} />
+                        </Link>
                         <button
                           type="button"
                           className="btn btn-sm btn-outline-danger"
