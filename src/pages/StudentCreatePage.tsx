@@ -21,15 +21,16 @@ export default function StudentCreatePage() {
   }
 
   return (
-    <div className="page-content">
-      <div className="page-header">
+    <div className="page-content student-page">
+      <div className="page-header student-page-header">
         <div>
+          <span className="student-page-eyebrow">STUDENT MANAGEMENT</span>
           <h1>Add Student</h1>
-          <p>Create a new student record.</p>
+          <p>Set up a student profile and add them to the university records.</p>
         </div>
       </div>
 
-      <div className="panel">
+      <div className="panel student-form-panel">
         <StudentForm
           onSubmit={handleSubmit}
           submitLabel="Create Student"

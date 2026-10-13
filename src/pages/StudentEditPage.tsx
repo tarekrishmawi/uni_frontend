@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 
 import StudentForm from '../components/students/StudentForm';
@@ -96,8 +97,14 @@ export default function StudentEditPage() {
   if (loading) {
     return (
       <div className="page-content">
-        <div className="panel">
-          <p>Loading student information...</p>
+        <div className="panel student-load-panel" role="status">
+          <div className="student-loading-indicator">
+            <span className="student-loading-spinner" aria-hidden="true" />
+            <div>
+              <strong>Loading student profile</strong>
+              <p>Getting the latest student information…</p>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -105,31 +112,40 @@ export default function StudentEditPage() {
 
   if (error || !student) {
     return (
-      <div className="page-content">
-        <div className="page-header">
+      <div className="page-content student-page">
+        <div className="page-header student-page-header">
           <div>
+            <span className="student-page-eyebrow">STUDENT MANAGEMENT</span>
             <h1>Edit Student</h1>
-            <p>Unable to open this student record.</p>
+            <p>We couldn’t open this student profile.</p>
           </div>
         </div>
 
-        <div className="panel">
-          <div className="form-error" role="alert">
-            {error || 'Student not found.'}
+        <div className="panel student-form-panel">
+          <div className="student-alert student-alert-error" role="alert" aria-live="assertive">
+            <AlertCircle className="student-alert-icon" size={19} aria-hidden="true" />
+            <div>
+              <strong>Student profile unavailable</strong>
+              <p>{error || 'Student not found.'}</p>
+            </div>
           </div>
 
-          <Link to="/students" className="btn btn-secondary">
-            Back to Students
-          </Link>
+          <div className="student-error-actions">
+            <Link to="/students" className="btn btn-secondary">
+              <ArrowLeft size={16} />
+              Back to Students
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="page-content">
-      <div className="page-header">
+    <div className="page-content student-page">
+      <div className="page-header student-page-header">
         <div>
+          <span className="student-page-eyebrow">STUDENT MANAGEMENT</span>
           <h1>Edit Student</h1>
           <p>
             Update {student.firstName} {student.lastName}'s information.
@@ -137,7 +153,7 @@ export default function StudentEditPage() {
         </div>
       </div>
 
-      <div className="panel">
+      <div className="panel student-form-panel">
         <StudentForm
           key={student.id}
           initialStudent={student}
