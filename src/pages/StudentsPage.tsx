@@ -1,5 +1,4 @@
-
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -10,16 +9,16 @@ import {
   Search,
   Trash2,
   Users,
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import {
   clearStudentsError,
   loadStudents,
   removeStudent,
-} from '../features/students/studentsSlice';
-import type { StudentQuery } from '../features/students/studentsTypes';
+} from "../features/students/studentsSlice";
+import type { StudentQuery } from "../features/students/studentsTypes";
 
 const PAGE_SIZE = 10;
 
@@ -28,9 +27,9 @@ export default function StudentsPage() {
   const { data, loading, saving, error, page, totalElements, totalPages } =
     useAppSelector((state) => state.students);
 
-  const [searchInput, setSearchInput] = useState('');
-  const [status, setStatus] = useState('');
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState("");
+  const [status, setStatus] = useState("");
+  const [search, setSearch] = useState("");
 
   const load = useCallback(
     (pageNumber: number, searchTerm = search, statusFilter = status) => {
@@ -39,8 +38,8 @@ export default function StudentsPage() {
         status: statusFilter,
         page: pageNumber,
         size: PAGE_SIZE,
-        sortBy: 'lastName',
-        direction: 'asc',
+        sortBy: "lastName",
+        direction: "asc",
       };
 
       void dispatch(loadStudents(query));
@@ -55,12 +54,10 @@ export default function StudentsPage() {
   function handleSearch(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSearch(searchInput.trim());
-    load(0, searchInput.trim(), status);
   }
 
   function handleStatusChange(value: string) {
     setStatus(value);
-    load(0, search, value);
   }
 
   async function handleDelete(id: number, name: string) {
@@ -72,7 +69,11 @@ export default function StudentsPage() {
 
     const result = await dispatch(removeStudent(id));
 
-    if (removeStudent.fulfilled.match(result) && data.length === 1 && page > 0) {
+    if (
+      removeStudent.fulfilled.match(result) &&
+      data.length === 1 &&
+      page > 0
+    ) {
       load(page - 1);
     }
   }
@@ -201,20 +202,14 @@ export default function StudentsPage() {
                 {loading ? (
                   <tr>
                     <td colSpan={6} className="text-center py-5">
-                      <LoaderCircle
-                        className="text-primary mb-2"
-                        size={28}
-                      />
+                      <LoaderCircle className="text-primary mb-2" size={28} />
                       <div className="text-secondary">Loading students...</div>
                     </td>
                   </tr>
                 ) : data.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="text-center py-5">
-                      <Users
-                        className="text-secondary mb-2"
-                        size={32}
-                      />
+                      <Users className="text-secondary mb-2" size={32} />
                       <div className="fw-semibold">No students found</div>
                       <div className="text-secondary small">
                         Try another search or add a student.
@@ -234,13 +229,13 @@ export default function StudentsPage() {
                       </td>
                       <td>{student.studentNumber}</td>
                       <td>{student.email}</td>
-                      <td>{student.phone || '—'}</td>
+                      <td>{student.phone || "—"}</td>
                       <td>
                         <span
                           className={`badge ${
-                            student.status === 'ACTIVE'
-                              ? 'text-bg-success'
-                              : 'text-bg-secondary'
+                            student.status === "ACTIVE"
+                              ? "text-bg-success"
+                              : "text-bg-secondary"
                           }`}
                         >
                           {student.status}
@@ -281,7 +276,7 @@ export default function StudentsPage() {
           <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
             <span className="text-secondary small">
               {totalElements === 0
-                ? 'No records'
+                ? "No records"
                 : `Showing ${page * PAGE_SIZE + 1}–${Math.min(
                     (page + 1) * PAGE_SIZE,
                     totalElements,
